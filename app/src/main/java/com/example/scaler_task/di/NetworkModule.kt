@@ -54,8 +54,6 @@ object NetworkModule {
         httpClient.apply {
             addInterceptor(loggingInterceptor)
             connectTimeout(30, TimeUnit.SECONDS)
-            readTimeout(60, TimeUnit.SECONDS)
-            writeTimeout(60, TimeUnit.SECONDS);
         }
         return httpClient.build();
 

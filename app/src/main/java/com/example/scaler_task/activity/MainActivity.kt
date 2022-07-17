@@ -1,7 +1,6 @@
 package com.example.scaler_task.activity
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -13,11 +12,13 @@ import com.example.scaler_task.adapter.ItemClickListner
 import com.example.scaler_task.adapter.VideoAdapter
 import com.example.scaler_task.constants.UIUtils
 import com.example.scaler_task.databinding.ActivityMainBinding
+import com.example.scaler_task.fragment.MainFragment
 import com.example.scaler_task.pojo.Status
 import com.example.scaler_task.pojo.Videos
 import com.example.scaler_task.viewModel.MainViewModel
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
 import com.google.android.exoplayer2.source.MediaSource
@@ -27,7 +28,7 @@ import com.google.android.exoplayer2.upstream.DefaultDataSource
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity(), ItemClickListner, Player.Listener {
+class MainActivity : AppCompatActivity(), ItemClickListner, Player.Listener, View.OnClickListener {
 
     private val mainViewModel: MainViewModel by viewModels()
     private lateinit var binding: ActivityMainBinding
@@ -38,15 +39,20 @@ class MainActivity : AppCompatActivity(), ItemClickListner, Player.Listener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        initListener()
         initRecyclerView()
         setupObserver()
 
     }
 
+    private fun initListener() {
+        binding.addButton.setOnClickListener(this)
+    }
+
 
     private fun initRecyclerView() {
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = VideoAdapter(arrayListOf(), this)
+        adapter = VideoAdapter(arrayListOf(), this, mainViewModel)
         binding.recyclerView.adapter = adapter
     }
 
@@ -170,6 +176,11 @@ class MainActivity : AppCompatActivity(), ItemClickListner, Player.Listener {
     }
 
 
+    override fun onPlayerError(error: PlaybackException) {
+        super.onPlayerError(error)
+        Toast.makeText(this, "Inavlid video url "+error.message, Toast.LENGTH_LONG).show()
+    }
+
     override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
         simpleExoPlayer?.currentPeriodIndex?.let { pos ->
             updateReplayCount(pos)
@@ -183,16 +194,51 @@ class MainActivity : AppCompatActivity(), ItemClickListner, Player.Listener {
         }
     }
 
-    override fun editItem(position: Int) {
+    override fun editItem(videos: Videos, position: Int) {
+        openMainFragment(videos, position)
+    }
 
+    private fun openMainFragment(videos: Videos?, position: Int?) {
+        simpleExoPlayer?.pause()
+        UIUtils.addFragment(
+            this,
+            R.id.fragment_container,
+            MainFragment.newInstance(videos, position),
+            MainFragment.TAG
+        )
+    }
+
+
+    fun addItem(videos: Videos, position: Int?) {
+        if (position != null) {
+            adapter.updateItem(position, videos)
+            mainViewModel.videoList.videos?.add(position, videos)
+            simpleExoPlayer?.addMediaSource(
+                position,
+                getMediaSource(videos.video_files.get(0).link)
+            )
+        } else {
+            adapter.addItem(videos)
+            mainViewModel.videoList.videos?.add(videos)
+            simpleExoPlayer?.addMediaSource(getMediaSource(videos.video_files.get(0).link))
+
+        }
     }
 
     override fun removeItem(position: Int) {
-        Log.e("zzz=", position.toString())
         mainViewModel.videoList.videos?.removeAt(position)
         adapter.remove(position)
         simpleExoPlayer?.removeMediaItem(position)
     }
+
+    override fun onClick(v: View) {
+        when (v.id) {
+            R.id.addButton -> {
+                openMainFragment(null, null)
+            }
+        }
+    }
+
 
 
     override fun onStop() {

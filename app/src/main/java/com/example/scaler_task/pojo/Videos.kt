@@ -1,9 +1,10 @@
 package com.example.scaler_task.pojo
 
+import java.io.Serializable
+
 data class Videos(
-    val id: Int,
-    val image: String,
-    var isPlaying:Boolean,
+    var url:String,
+    var image: String,
     var playedCount:Int,
-    val video_files: List<VideoFiles>
-)
+    var video_files: List<VideoFiles>
+):Serializable

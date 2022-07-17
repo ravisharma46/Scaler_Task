@@ -11,17 +11,19 @@ import androidx.viewbinding.ViewBinding
 import com.bumptech.glide.Glide
 import com.example.scaler_task.databinding.ItemLayoutBinding
 import com.example.scaler_task.pojo.Videos
+import com.example.scaler_task.viewModel.MainViewModel
 
 
 interface ItemClickListner {
     fun onItemClick(position: Int, videoUrl: String)
     fun removeItem(position: Int)
-    fun editItem(position: Int)
+    fun editItem(videos: Videos, position: Int)
 }
 
 class VideoAdapter(
     private val videoList: ArrayList<Videos>,
-    private val itemClickListner: ItemClickListner
+    private val itemClickListner: ItemClickListner,
+    private val mainViewModel: MainViewModel
 ) : RecyclerView.Adapter<VideoAdapter.DataViewHolder>() {
 
 
@@ -33,8 +35,7 @@ class VideoAdapter(
             position: Int
         ) {
             binding.item = data
-            //binding.title.text = data.id.toString()
-            binding.subTitle.text = data.video_files.get(0).link
+            binding.model = mainViewModel
             Glide.with(binding.root.context)
                 .load(data.image) // image url
                 .centerCrop()
@@ -43,20 +44,20 @@ class VideoAdapter(
                 itemClickListner.onItemClick(position, data.video_files.get(0).link)
             }
             binding.threeDot.setOnClickListener {
-                openPopUpMenu(position)
+                openPopUpMenu(position, data)
             }
 
         }
 
 
-        private fun openPopUpMenu(position: Int) {
+        private fun openPopUpMenu(position: Int, data: Videos) {
             val popup = PopupMenu(binding.root.context, binding.threeDot)
             popup.inflate(com.example.scaler_task.R.menu.options_menu)
             popup.setOnMenuItemClickListener(object : PopupMenu.OnMenuItemClickListener {
                 override fun onMenuItemClick(item: MenuItem?): Boolean {
                     when (item?.itemId) {
                         com.example.scaler_task.R.id.edit -> {
-                            itemClickListner.editItem(position)
+                            itemClickListner.editItem(data, position)
                         }
                         com.example.scaler_task.R.id.delete -> {
                             itemClickListner.removeItem(position)
@@ -89,6 +90,16 @@ class VideoAdapter(
 
     fun addData(list: List<Videos>) {
         videoList.addAll(list)
+    }
+
+    fun updateItem(position: Int, videos: Videos) {
+        videoList.set(position, videos)
+        notifyItemChanged(position, videos)
+    }
+
+    fun addItem(videos: Videos) {
+        videoList.add(videos)
+        notifyItemInserted(videoList.size - 1)
     }
 
     fun remove(position: Int) {

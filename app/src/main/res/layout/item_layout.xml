@@ -9,6 +9,10 @@
             name="item"
             type="com.example.scaler_task.pojo.Videos" />
 
+        <variable
+            name="model"
+            type="com.example.scaler_task.viewModel.MainViewModel" />
+
         <import type="android.view.View" />
     </data>
 
@@ -27,13 +31,13 @@
             android:layout_height="match_parent">
 
             <ImageView
+                android:id="@+id/threeDot"
                 android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="12dp"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/three_dot"
-                android:id="@+id/threeDot"
-                android:padding="12dp"
-                android:layout_height="wrap_content"/>
+                app:srcCompat="@drawable/three_dot" />
 
 
             <ImageView
@@ -52,11 +56,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
                 android:ellipsize="end"
-                android:maxLines="1"
-                android:text="@{String.valueOf(item.id)}"
+                android:singleLine="true"
+                android:text="@{model.getTitleFromUrl(item.url)}"
                 android:textSize="14sp"
                 app:layout_constraintLeft_toRightOf="@+id/image"
-                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintRight_toLeftOf="@+id/threeDot"
                 app:layout_constraintTop_toTopOf="@id/image"
                 tools:text="title" />
 
@@ -74,23 +78,10 @@
                 app:layout_constraintTop_toBottomOf="@+id/title"
                 tools:text="Replay count :1" />
 
-            <TextView
-                android:id="@+id/isPlaying"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="12dp"
-                android:ellipsize="end"
-                android:maxLines="2"
-                android:text="Playing Now"
-                android:textColor="@color/purple_500"
-                android:textSize="12sp"
-                android:visibility="@{item.playing ? View.VISIBLE : View.INVISIBLE}"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/title" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 
     </com.google.android.material.card.MaterialCardView>
