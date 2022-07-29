@@ -4,6 +4,7 @@
     package="com.example.scaler_task">
 
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <application
         android:name=".di.AppModule"
@@ -15,7 +16,7 @@
         android:usesCleartextTraffic="true"
         android:theme="@style/Theme.Scaler_Task">
         <activity
-            android:name=".activity.MainActivity"
+            android:name=".activity.KhabriTaskActivity"
             android:screenOrientation="portrait"
             android:exported="true">
             <intent-filter>
@@ -25,5 +26,21 @@
             </intent-filter>
         </activity>
     </application>
+
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE" />
+        </intent>
+        <intent>
+            <action android:name="android.speech.RecognitionService" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.SEND" />
+            <data android:mimeType="*/*" />
+        </intent>
+
+        <package android:name="com.google.android.calendar" />
+
+    </queries>
 
 </manifest>

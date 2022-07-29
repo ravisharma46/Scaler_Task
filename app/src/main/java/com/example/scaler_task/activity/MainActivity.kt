@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity(), ItemClickListner, Player.Listener, Vie
 
     private fun setupObserver() {
         if (UIUtils.isNetworkAvailable(this)) {
-            mainViewModel.getVideoList().observe(this, {
+            mainViewModel.getVideoList().observe(this) {
                 when (it.status) {
                     Status.SUCCESS -> {
                         binding.progressBar.visibility = View.GONE
@@ -83,7 +83,7 @@ class MainActivity : AppCompatActivity(), ItemClickListner, Player.Listener, Vie
                         ).show()
                     }
                 }
-            })
+            }
         } else {
             Toast.makeText(this, "No Internet", Toast.LENGTH_LONG).show()
         }
@@ -178,7 +178,7 @@ class MainActivity : AppCompatActivity(), ItemClickListner, Player.Listener, Vie
 
     override fun onPlayerError(error: PlaybackException) {
         super.onPlayerError(error)
-        Toast.makeText(this, "Inavlid video url "+error.message, Toast.LENGTH_LONG).show()
+        Toast.makeText(this, "Inavlid video url " + error.message, Toast.LENGTH_LONG).show()
     }
 
     override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
@@ -238,7 +238,6 @@ class MainActivity : AppCompatActivity(), ItemClickListner, Player.Listener, Vie
             }
         }
     }
-
 
 
     override fun onStop() {

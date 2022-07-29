@@ -5,10 +5,12 @@ import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
+import androidx.lifecycle.viewModelScope
 import com.example.scaler_task.pojo.Resource
 import com.example.scaler_task.pojo.VideosList
 import com.example.scaler_task.repository.MainRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 const val pageSize = 15
